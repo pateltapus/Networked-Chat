@@ -3,6 +3,7 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.text.Position.Bias;
 
 public class ChatClient extends JFrame implements ActionListener
 {  
@@ -19,6 +20,10 @@ public class ChatClient extends JFrame implements ActionListener
   
   //Username array
   String[] userNames = { "All" };
+  
+  //SHA ints
+  int pValue;
+  int qValue;
 
   // Network Items
   boolean connected;
@@ -102,6 +107,9 @@ public class ChatClient extends JFrame implements ActionListener
       sendButton.setEnabled (false);
       lowerPanel.add( sendButton );
       
+      pValue = 0;
+      qValue = 0;
+      
       setSize( 500, 300 );
       setVisible( true );
 
@@ -145,20 +153,47 @@ public class ChatClient extends JFrame implements ActionListener
              int result = JOptionPane.showConfirmDialog(null, myPanel, 
                "Please Enter your info", JOptionPane.OK_CANCEL_OPTION);
          
-             if (result == JOptionPane.OK_OPTION) 
+             if (result == JOptionPane.OK_OPTION)//IF the ok option is selected 
              {
+               //Parse info from text fields
                String userName = nameField.getText();
-               //System.out.println(userName);
+               if(!pValueField.getText().equals(""))
+                 pValue =  Integer.parseInt(pValueField.getText());
+               else
+                 pValue = 0;
+               
+               if(!qValueField.getText().equals(""))
+                qValue =  Integer.parseInt(qValueField.getText());
+               else
+                 qValue = 0;
+               
+               
+               
+               DefaultListModel model = (DefaultListModel)listUsers.getModel();
+               // If list contains username
+               if(model.contains(userName)) {
+                 JOptionPane.showMessageDialog(null, "Username entered is already in used select a new one");
+                 continue;
+               }
+               else{//if its unique
+                 
+                 doManageConnection();
+                 break;
+               }
              }
-             else if (result == JOptionPane.CANCEL_OPTION)
+             else if (result == JOptionPane.CANCEL_OPTION)//If cancel was selected
              {
-                JOptionPane.showConfirmDialog(null, myPanel, 
+                JOptionPane.showConfirmDialog(null, "Cancel button was selected", 
                    "Sign in canceled", JOptionPane.OK_CANCEL_OPTION);
                 break;
              }
+             
+             else{//Exit loop if anything else is pressed
+               break;
+             }
          }
          
-         doManageConnection();
+         
        }
     }
 
