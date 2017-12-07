@@ -30,6 +30,7 @@ public class ChatClient extends JFrame implements ActionListener
   //SHA ints
   int pValue;
   int qValue;
+  MessageType rsa;
 
   // Network Items
   boolean connected;
@@ -45,6 +46,8 @@ public class ChatClient extends JFrame implements ActionListener
    {
       super( "Echo Client" );
       destination = new StringBuilder();
+      //setup RSA encrption class
+      rsa = new MessageType();
       // get content pane and set its layout
       Container container = getContentPane();
       container.setLayout (new BorderLayout ());
@@ -171,7 +174,8 @@ public class ChatClient extends JFrame implements ActionListener
                else
                  qValue = 0;
 
-
+               rsa.setKeys(pValue, qValue);
+               
                DefaultListModel model = (DefaultListModel)listUsers.getModel();
                // If list contains username
                if(model.contains(userName)) {
@@ -219,6 +223,8 @@ public class ChatClient extends JFrame implements ActionListener
         else if (!(destination.toString().equals("All Users")))
         {
         System.out.println("Destination " + destination.toString());
+        //encrypt message based on destination
+        
         String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
         out.println(sendMessage);
         }
@@ -227,6 +233,7 @@ public class ChatClient extends JFrame implements ActionListener
         {
           for(String name: userNames)
           {
+            //encrypt the message for the destination
             String sendMessage = (userName + "*" + name + "*" + message.getText());
             out.println(sendMessage);
           }
@@ -254,7 +261,7 @@ public class ChatClient extends JFrame implements ActionListener
                                         echoSocket.getInputStream()));
 
             // start a new thread to read from the socket
-            new CommunicationReadThread (in, this, listModelUsers, destination);
+            new CommunicationReadThread (in, this, listModelUsers, destination, userNames);
 
             sendButton.setEnabled(true);
             connected = true;
@@ -321,13 +328,17 @@ class CommunicationReadThread extends Thread
  private BufferedReader in;
  private  DefaultListModel<String> listModelUsers;
  private StringBuilder destination;
+ private String userNames[];
+ private MessageType rsa;
 
- public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu, StringBuilder dst)
+ public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu, StringBuilder dst, String[] uNames, MessageType mtype)
    {
     in = inparam;
     gui = ec3;
     listModelUsers = lmu;
     destination = dst;
+    userNames = uNames;
+    rsa = mtype;
     start();
     gui.history.insert ("Communicating with Port\n", 0);
 
@@ -353,11 +364,14 @@ class CommunicationReadThread extends Thread
                  if(listModelUsers.contains(array[1]) == false)
                  {
                    listModelUsers.addElement(array[1]);
+                   userNames[userNames.length -1] = array[1];
+                   //add public key here for rsa encryption
                  }
                }
 
 
               //history.insert ("From Server: " + in.readLine() + "\n" , 0);
+               //need to add the decrypt line here
               System.out.println ("Client: " + array[0]);
               gui.history.insert ("From : " + array[0] + array[2] + "\n", 0);
 
