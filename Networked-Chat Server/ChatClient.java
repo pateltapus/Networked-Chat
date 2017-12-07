@@ -7,6 +7,7 @@ import javax.swing.table.*;
 import javax.swing.*;
 import java.util.*;
 import javax.swing.text.Position.Bias;
+import java.lang.StringBuilder;
 
 public class ChatClient extends JFrame implements ActionListener
 {
@@ -24,7 +25,7 @@ public class ChatClient extends JFrame implements ActionListener
   //Username array
   String[] userNames = { "All" };
   String userName;
-  String destination;
+  StringBuilder destination;
 
   //SHA ints
   int pValue;
@@ -43,7 +44,7 @@ public class ChatClient extends JFrame implements ActionListener
    public ChatClient()
    {
       super( "Echo Client" );
-
+      destination = new StringBuilder();
       // get content pane and set its layout
       Container container = getContentPane();
       container.setLayout (new BorderLayout ());
@@ -216,7 +217,8 @@ public class ChatClient extends JFrame implements ActionListener
           out.println(message.getText());
         }
         else {
-        String sendMessage = (userName + "*" + destination + "*" + message.getText());
+        System.out.println("Destination " + destination.toString());
+        String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
         out.println(sendMessage);
         }
         //history.insert ("From Server: " + in.readLine() + "\n" , 0);
@@ -282,8 +284,8 @@ public class ChatClient extends JFrame implements ActionListener
 //action listener for list
 
  class SharedListSelectionHandler implements ListSelectionListener {
-   String destination;
-      public SharedListSelectionHandler(String dst)
+   StringBuilder destination;
+      public SharedListSelectionHandler(StringBuilder dst)
       {
         destination = dst;
       }
@@ -293,8 +295,8 @@ public class ChatClient extends JFrame implements ActionListener
               JList source = (JList)e.getSource();
               String selected = source.getSelectedValue().toString();
               System.out.println(selected);
-              destination = selected;
-              System.out.println(" sending to " + destination);
+              destination.write(selected);
+              System.out.println(" sending to " + destination.toString());
             }
         }
     }
