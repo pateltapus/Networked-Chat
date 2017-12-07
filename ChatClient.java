@@ -23,7 +23,7 @@ public class ChatClient extends JFrame implements ActionListener
   DefaultListModel<String> listModelUsers = new DefaultListModel<>();
 
   //Username array
-  String[] userNames;
+  ArrayList<String> userNames;
   String userName;
   StringBuilder destination;
 
@@ -45,6 +45,7 @@ public class ChatClient extends JFrame implements ActionListener
    public ChatClient()
    {
       super( "Echo Client" );
+      userNames = new ArrayList<String>();
       destination = new StringBuilder();
       //setup RSA encrption class
       rsa = new MessageType();
@@ -175,7 +176,7 @@ public class ChatClient extends JFrame implements ActionListener
                  qValue = 0;
 
                rsa.setKeys(pValue, qValue);
-               
+
                DefaultListModel model = (DefaultListModel)listUsers.getModel();
                // If list contains username
                if(model.contains(userName)) {
@@ -224,7 +225,7 @@ public class ChatClient extends JFrame implements ActionListener
         {
         System.out.println("Destination " + destination.toString());
         //encrypt message based on destination
-        
+
         String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
         out.println(sendMessage);
         }
@@ -261,7 +262,7 @@ public class ChatClient extends JFrame implements ActionListener
                                         echoSocket.getInputStream()));
 
             // start a new thread to read from the socket
-            new CommunicationReadThread (in, this, listModelUsers, destination, userNames);
+            new CommunicationReadThread (in, this, listModelUsers, destination, userNames, rsa);
 
             sendButton.setEnabled(true);
             connected = true;
@@ -328,10 +329,10 @@ class CommunicationReadThread extends Thread
  private BufferedReader in;
  private  DefaultListModel<String> listModelUsers;
  private StringBuilder destination;
- private String userNames[];
+ private ArrayList<String> userNames;
  private MessageType rsa;
 
- public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu, StringBuilder dst, String[] uNames, MessageType mtype)
+ public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu, StringBuilder dst, ArrayList<String> uNames, MessageType mtype)
    {
     in = inparam;
     gui = ec3;
@@ -364,7 +365,8 @@ class CommunicationReadThread extends Thread
                  if(listModelUsers.contains(array[1]) == false)
                  {
                    listModelUsers.addElement(array[1]);
-                   userNames[userNames.length -1] = array[1];
+                   //userNames[userNames.length -1] = array[1];
+                   userNames.add(array[1]);
                    //add public key here for rsa encryption
                  }
                }
