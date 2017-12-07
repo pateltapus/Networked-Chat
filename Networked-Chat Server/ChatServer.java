@@ -223,24 +223,9 @@ class CommunicationThread extends Thread
 
                 // add a if else statment here
                 // if statment will send only to matches of username
-
-                // Loop through the outStreamList and send to all "active" streams
-                //out.println(inputLine);
-                if(array[0] == "ALL"){
-                  for ( PrintWriter out1: outStreamList )
-                  {
-                    System.out.println ("Sending Message");
-                    out1.println (inputLine);
-                  }
-                }
-                // sending to individual person
-                else
-                {
-                  System.out.println(" This is array[0] ");
-                  int outputStreamIndex = userName.indexOf(array[1]);
-                  PrintWriter temp = outStreamList.get(outputStreamIndex);
-                  temp.println(inputLine);
-                }
+                int outputStreamIndex = userName.indexOf(array[1]);
+                PrintWriter temp = outStreamList.get(outputStreamIndex);
+                temp.println(inputLine);
 
               }
 

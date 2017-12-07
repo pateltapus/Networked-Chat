@@ -56,15 +56,6 @@ public class ChatClient extends JFrame implements ActionListener
       // create buttons
       connected = false;
 
-      //upperPanel.add ( new JLabel ("Message: ", JLabel.RIGHT) );
-      //message = new JTextField ("");
-      //message.addActionListener( this );
-      //upperPanel.add( message );
-
-      //sendButton = new JButton( "Send Message" );
-      //sendButton.addActionListener( this );
-      //sendButton.setEnabled (false);
-      //upperPanel.add( sendButton );
 
       upperPanel.add ( new JLabel ("Server Address: ", JLabel.RIGHT) );
       machineInfo = new JTextField ("127.0.0.1");
@@ -86,7 +77,7 @@ public class ChatClient extends JFrame implements ActionListener
       //list with all the users
       listModelUsers.addElement("All Users");
       listUsers = new JList<>(listModelUsers);
-      
+
       listUsers.setVisibleRowCount(6);
       listUsers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       JScrollPane scrollPane = new JScrollPane(listUsers);
@@ -95,8 +86,8 @@ public class ChatClient extends JFrame implements ActionListener
       d.height = 150;
       scrollPane.setPreferredSize(d);
       centerPanel.add(scrollPane);
-      
-      listUsers.addListSelectionListener( new SharedListSelectionHandler());
+
+      listUsers.addListSelectionListener( new SharedListSelectionHandler(destination));
 
       //chat history
       history = new JTextArea ( 10, 30 );
@@ -209,18 +200,25 @@ public class ChatClient extends JFrame implements ActionListener
          // send the username to the server
          message.setText("*" + userName + "*" + "8");
          doSendMessage();
-         message.setText(" ");
+         message.setText("");
 
        }
     }
-    
-    
+
+
 
     public void doSendMessage()
     {
       try
       {
-        out.println(message.getText());
+        if(message.getText().charAt(0) == '*')
+        {
+          out.println(message.getText());
+        }
+        else {
+        String sendMessage = (userName + "*" + destination + "*" + message.getText());
+        out.println(sendMessage);
+        }
         //history.insert ("From Server: " + in.readLine() + "\n" , 0);
       }
       catch (Exception e)
@@ -284,11 +282,19 @@ public class ChatClient extends JFrame implements ActionListener
 //action listener for list
 
  class SharedListSelectionHandler implements ListSelectionListener {
-        public void valueChanged(ListSelectionEvent e) { 
+   String destination;
+      public SharedListSelectionHandler(String dst)
+      {
+        destination = dst;
+      }
+
+        public void valueChanged(ListSelectionEvent e) {
             if (!e.getValueIsAdjusting()){
               JList source = (JList)e.getSource();
               String selected = source.getSelectedValue().toString();
               System.out.println(selected);
+              destination = selected;
+              System.out.println(" sending to " + destination);
             }
         }
     }
