@@ -386,6 +386,10 @@ class CommunicationReadThread extends Thread
                    //userNames[userNames.length -1] = array[1];
                    userNames.add(array[1]);
                    //add public key here for rsa encryption
+                   int pKey[] = new int[2];
+                   pKey[0] = Integer.parseInt(array[2]);
+                   pKey[1] = Integer.parseInt(array[3]);
+                   rsa.addPublicKey(pKey,array[1]);
                  }
                }
                else
