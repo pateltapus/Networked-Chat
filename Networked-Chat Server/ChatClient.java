@@ -216,10 +216,19 @@ public class ChatClient extends JFrame implements ActionListener
         {
           out.println(message.getText());
         }
-        else {
+        else if (userName != "All Users")
+        {
         System.out.println("Destination " + destination.toString());
         String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
         out.println(sendMessage);
+        }
+        // this will send it to all the users on the list
+        else
+        {
+          for(String name: userNames)
+          {
+            String sendMessage = (userName + "*" + name + "*" + message.getText());
+          }
         }
         //history.insert ("From Server: " + in.readLine() + "\n" , 0);
       }
@@ -332,23 +341,24 @@ class CommunicationReadThread extends Thread
 
          while ((inputLine = in.readLine()) != null)
              {
+               String token = "[*]";
+               String[] array = inputLine.split(token);
+
                if(inputLine.charAt(0) == '*')
                {
                  gui.history.insert("new Client List item " + inputLine + "\n", 0);
-                 String token = "[*]";
-                 String[] array = inputLine.split(token);
+                 // String token = "[*]";
+                 // String[] array = inputLine.split(token);
                  if(listModelUsers.contains(array[1]) == false)
                  {
                    listModelUsers.addElement(array[1]);
                  }
-
-
                }
 
 
               //history.insert ("From Server: " + in.readLine() + "\n" , 0);
-              System.out.println ("Client: " + inputLine);
-              gui.history.insert ("From Server: " + inputLine + "\n", 0);
+              System.out.println ("Client: " + array[0]);
+              gui.history.insert ("From : " + array[0] + array[2] + "\n", 0);
 
               if (inputLine.equals("Bye."))
                   break;
