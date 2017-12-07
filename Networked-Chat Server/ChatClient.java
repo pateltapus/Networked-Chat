@@ -295,7 +295,8 @@ public class ChatClient extends JFrame implements ActionListener
               JList source = (JList)e.getSource();
               String selected = source.getSelectedValue().toString();
               System.out.println(selected);
-              destination.write(selected);
+              destination.delete(0, destination.length());
+              destination.append(selected);
               System.out.println(" sending to " + destination.toString());
             }
         }
@@ -309,9 +310,9 @@ class CommunicationReadThread extends Thread
  private ChatClient gui;
  private BufferedReader in;
  private  DefaultListModel<String> listModelUsers;
- private String destination;
+ private StringBuilder destination;
 
- public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu, String dst)
+ public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu, StringBuilder dst)
    {
     in = inparam;
     gui = ec3;
