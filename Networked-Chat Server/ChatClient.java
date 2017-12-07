@@ -2,7 +2,10 @@ import java.net.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.event.*;
+import javax.swing.table.*;
 import javax.swing.*;
+import java.util.*;
 import javax.swing.text.Position.Bias;
 
 public class ChatClient extends JFrame implements ActionListener
@@ -83,7 +86,7 @@ public class ChatClient extends JFrame implements ActionListener
       //list with all the users
       listModelUsers.addElement("All Users");
       listUsers = new JList<>(listModelUsers);
-      listUsers.addActionListener(this);
+      
       listUsers.setVisibleRowCount(6);
       listUsers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       JScrollPane scrollPane = new JScrollPane(listUsers);
@@ -92,6 +95,8 @@ public class ChatClient extends JFrame implements ActionListener
       d.height = 150;
       scrollPane.setPreferredSize(d);
       centerPanel.add(scrollPane);
+      
+      listUsers.addListSelectionListener( new SharedListSelectionHandler());
 
       //chat history
       history = new JTextArea ( 10, 30 );
@@ -208,6 +213,8 @@ public class ChatClient extends JFrame implements ActionListener
 
        }
     }
+    
+    
 
     public void doSendMessage()
     {
@@ -272,7 +279,19 @@ public class ChatClient extends JFrame implements ActionListener
 
     }
 
- } // end class EchoServer3
+} // end class EchoServer3
+
+//action listener for list
+
+ class SharedListSelectionHandler implements ListSelectionListener {
+        public void valueChanged(ListSelectionEvent e) { 
+            if (!e.getValueIsAdjusting()){
+              JList source = (JList)e.getSource();
+              String selected = source.getSelectedValue().toString();
+              System.out.println(selected);
+            }
+        }
+    }
 
 // Class to handle socket reads
 //   THis class is NOT written as a nested class, but perhaps it should
