@@ -21,6 +21,7 @@ public class ChatClient extends JFrame implements ActionListener
   //Username array
   String[] userNames = { "All" };
   String userName;
+  String destination;
 
   //SHA ints
   int pValue;
@@ -82,6 +83,7 @@ public class ChatClient extends JFrame implements ActionListener
       //list with all the users
       listModelUsers.addElement("All Users");
       listUsers = new JList<>(listModelUsers);
+      listUsers.addActionListener(this);
       listUsers.setVisibleRowCount(6);
       listUsers.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
       JScrollPane scrollPane = new JScrollPane(listUsers);
@@ -235,7 +237,7 @@ public class ChatClient extends JFrame implements ActionListener
                                         echoSocket.getInputStream()));
 
             // start a new thread to read from the socket
-            new CommunicationReadThread (in, this, listModelUsers);
+            new CommunicationReadThread (in, this, listModelUsers, destination);
 
             sendButton.setEnabled(true);
             connected = true;
@@ -280,13 +282,14 @@ class CommunicationReadThread extends Thread
  private ChatClient gui;
  private BufferedReader in;
  private  DefaultListModel<String> listModelUsers;
+ private String destination;
 
-
- public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu)
+ public CommunicationReadThread (BufferedReader inparam, ChatClient ec3, DefaultListModel<String> lmu, String dst)
    {
     in = inparam;
     gui = ec3;
     listModelUsers = lmu;
+    destination = dst;
     start();
     gui.history.insert ("Communicating with Port\n", 0);
 
@@ -303,8 +306,15 @@ class CommunicationReadThread extends Thread
              {
                if(inputLine.charAt(0) == '*')
                {
-                 gui.history.insert("new Client List item " + inputLine, 0);
-                 listModelUsers.addElement(inputLine);
+                 gui.history.insert("new Client List item " + inputLine + "\n", 0);
+                 String token = "[*]";
+                 String[] array = inputLine.split(token);
+                 if(listModelUsers.contains(array[1]) == false)
+                 {
+                   listModelUsers.addElement(array[1]);
+                 }
+
+
                }
 
 
