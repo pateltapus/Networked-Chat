@@ -216,7 +216,7 @@ public class ChatClient extends JFrame implements ActionListener
         {
           out.println(message.getText());
         }
-        else if (!destination.toString().equals("All Users"))
+        else if (!(destination.toString().equals("All Users")))
         {
         System.out.println("Destination " + destination.toString());
         String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
