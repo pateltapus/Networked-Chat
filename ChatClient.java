@@ -175,7 +175,12 @@ public class ChatClient extends JFrame implements ActionListener
                else
                  qValue = 0;
 
-               rsa.setKeys(pValue, qValue);
+               if(!(rsa.setKeys(pValue, qValue)))
+               {
+                  JOptionPane.showMessageDialog(null, "Invalid p or q value please enter again!");
+                  continue;
+               }
+               rsa.addPublicKey(rsa.getPublicKey(), userName);
 
                DefaultListModel model = (DefaultListModel)listUsers.getModel();
                // If list contains username
@@ -204,7 +209,8 @@ public class ChatClient extends JFrame implements ActionListener
 
 
          // send the username to the server
-         message.setText("*" + userName + "*" + pValue + "*" + qValue);
+         int publicKey[] = rsa.getPublicKey();
+         message.setText("*" + userName + "*" + publicKey[0] + "*" + publicKey[1]);
          doSendMessage();
          message.setText("");
 
@@ -225,8 +231,8 @@ public class ChatClient extends JFrame implements ActionListener
         {
           System.out.println("Destination " + destination.toString());
           //encrypt message based on destination
-
-          String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
+          String sendMessage = rsa.encryptMessage(message.getText(),destination.toString());
+          sendMessage = (userName + "*" + destination.toString() + "*" + sendMessage);
           out.println(sendMessage);
           history.insert(userName + ": " + message.getText() + "\n", 0);
         }
@@ -237,7 +243,8 @@ public class ChatClient extends JFrame implements ActionListener
           {
             //encrypt the message for the destination
             if(!(name.equals(userName))){
-              String sendMessage = (userName + "*" + name + "*" + message.getText());
+              String sendMessage = rsa.encryptMessage(message.getText(), name);
+              sendMessage = (userName + "*" + name + "*" + sendMessage);
               out.println(sendMessage);
             }
             else
@@ -383,7 +390,8 @@ class CommunicationReadThread extends Thread
                  //history.insert ("From Server: " + in.readLine() + "\n" , 0);
                  //need to add the decrypt line here
                  System.out.println ("Client: " + array[0]);
-                 gui.history.insert (array[0] + ": "  + array[2] + "\n", 0);
+                 String displayMessage = rsa.decryptMessage(array[2]);
+                 gui.history.insert (array[0] + ": "  + displayMessage + "\n", 0);
                }
 
               if (inputLine.equals("Bye."))
