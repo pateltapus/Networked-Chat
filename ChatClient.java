@@ -228,7 +228,7 @@ public class ChatClient extends JFrame implements ActionListener
 
           String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
           out.println(sendMessage);
-          history.insert(userName + ": " + message.getText(), 0);
+          history.insert(userName + ": " + message.getText() + "\n", 0);
         }
         // this will send it to all the users on the list
         else
@@ -242,7 +242,7 @@ public class ChatClient extends JFrame implements ActionListener
             }
             else
             {
-              history.insert(userName + ": " + message.getText(), 0);
+              history.insert(userName + ": " + message.getText() + "\n", 0);
             }
           }
         }
@@ -377,12 +377,14 @@ class CommunicationReadThread extends Thread
                    //add public key here for rsa encryption
                  }
                }
+               else
+               {
 
-
-              //history.insert ("From Server: " + in.readLine() + "\n" , 0);
-               //need to add the decrypt line here
-              System.out.println ("Client: " + array[0]);
-              gui.history.insert (array[0] + ": "  + array[2] + "\n", 0);
+                 //history.insert ("From Server: " + in.readLine() + "\n" , 0);
+                 //need to add the decrypt line here
+                 System.out.println ("Client: " + array[0]);
+                 gui.history.insert (array[0] + ": "  + array[2] + "\n", 0);
+               }
 
               if (inputLine.equals("Bye."))
                   break;
