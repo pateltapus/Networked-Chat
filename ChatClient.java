@@ -232,7 +232,9 @@ public class ChatClient extends JFrame implements ActionListener
           System.out.println("Destination " + destination.toString());
           //encrypt message based on destination
           String sendMessage = rsa.encryptMessage(message.getText(),destination.toString());
+          System.out.println(sendMessage);
           sendMessage = (userName + "*" + destination.toString() + "*" + sendMessage);
+          System.out.println(sendMessage);
           out.println(sendMessage);
           history.insert(userName + ": " + message.getText() + "\n", 0);
         }
@@ -244,7 +246,9 @@ public class ChatClient extends JFrame implements ActionListener
             //encrypt the message for the destination
             if(!(name.equals(userName))){
               String sendMessage = rsa.encryptMessage(message.getText(), name);
+              System.out.println(sendMessage);
               sendMessage = (userName + "*" + name + "*" + sendMessage);
+              System.out.println(sendMessage);
               out.println(sendMessage);
             }
             else
