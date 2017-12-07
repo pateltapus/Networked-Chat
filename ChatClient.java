@@ -204,7 +204,7 @@ public class ChatClient extends JFrame implements ActionListener
 
 
          // send the username to the server
-         message.setText("*" + userName + "*" + "8");
+         message.setText("*" + userName + "*" + pValue + "*" + qValue);
          doSendMessage();
          message.setText("");
 
@@ -223,11 +223,12 @@ public class ChatClient extends JFrame implements ActionListener
         }
         else if (!(destination.toString().equals("All Users")))
         {
-        System.out.println("Destination " + destination.toString());
-        //encrypt message based on destination
+          System.out.println("Destination " + destination.toString());
+          //encrypt message based on destination
 
-        String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
-        out.println(sendMessage);
+          String sendMessage = (userName + "*" + destination.toString() + "*" + message.getText());
+          out.println(sendMessage);
+          history.insert(userName + ": " + message.getText(), 0);
         }
         // this will send it to all the users on the list
         else
@@ -235,8 +236,14 @@ public class ChatClient extends JFrame implements ActionListener
           for(String name: userNames)
           {
             //encrypt the message for the destination
-            String sendMessage = (userName + "*" + name + "*" + message.getText());
-            out.println(sendMessage);
+            if(!(name.equals(userName))){
+              String sendMessage = (userName + "*" + name + "*" + message.getText());
+              out.println(sendMessage);
+            }
+            else
+            {
+              history.insert(userName + ": " + message.getText(), 0);
+            }
           }
         }
         //history.insert ("From Server: " + in.readLine() + "\n" , 0);
@@ -359,7 +366,7 @@ class CommunicationReadThread extends Thread
 
                if(inputLine.charAt(0) == '*')
                {
-                 gui.history.insert("new Client List item " + inputLine + "\n", 0);
+                 //gui.history.insert("new Client List item " + inputLine + "\n", 0);
                  // String token = "[*]";
                  // String[] array = inputLine.split(token);
                  if(listModelUsers.contains(array[1]) == false)
@@ -375,7 +382,7 @@ class CommunicationReadThread extends Thread
               //history.insert ("From Server: " + in.readLine() + "\n" , 0);
                //need to add the decrypt line here
               System.out.println ("Client: " + array[0]);
-              gui.history.insert ("From : " + array[0] + array[2] + "\n", 0);
+              gui.history.insert (array[0] + ": "  + array[2] + "\n", 0);
 
               if (inputLine.equals("Bye."))
                   break;
