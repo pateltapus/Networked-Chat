@@ -229,12 +229,11 @@ public class ChatClient extends JFrame implements ActionListener
         }
         else if (!(destination.toString().equals("All Users")))
         {
-          System.out.println("Destination " + destination.toString());
+          int temp[] = rsa.hmap.get(destination.toString());
+          
           //encrypt message based on destination
           String sendMessage = rsa.encryptMessage(message.getText(),destination.toString());
-          System.out.println(sendMessage);
           sendMessage = (userName + "*" + destination.toString() + "*" + sendMessage);
-          System.out.println(sendMessage);
           out.println(sendMessage);
           history.insert(userName + ": " + message.getText() + "\n", 0);
         }
@@ -246,9 +245,7 @@ public class ChatClient extends JFrame implements ActionListener
             //encrypt the message for the destination
             if(!(name.equals(userName))){
               String sendMessage = rsa.encryptMessage(message.getText(), name);
-              System.out.println(sendMessage);
               sendMessage = (userName + "*" + name + "*" + sendMessage);
-              System.out.println(sendMessage);
               out.println(sendMessage);
             }
             else
@@ -257,7 +254,6 @@ public class ChatClient extends JFrame implements ActionListener
             }
           }
         }
-        //history.insert ("From Server: " + in.readLine() + "\n" , 0);
       }
       catch (Exception e)
       {
@@ -315,7 +311,7 @@ public class ChatClient extends JFrame implements ActionListener
 
     }
 
-} // end class EchoServer3
+} 
 
 //action listener for list
 
@@ -339,10 +335,8 @@ public class ChatClient extends JFrame implements ActionListener
     }
 
 // Class to handle socket reads
-//   THis class is NOT written as a nested class, but perhaps it should
 class CommunicationReadThread extends Thread
 {
- //private Socket clientSocket;
  private ChatClient gui;
  private BufferedReader in;
  private  DefaultListModel<String> listModelUsers;
@@ -377,13 +371,9 @@ class CommunicationReadThread extends Thread
 
                if(inputLine.charAt(0) == '*')
                {
-                 //gui.history.insert("new Client List item " + inputLine + "\n", 0);
-                 // String token = "[*]";
-                 // String[] array = inputLine.split(token);
                  if(listModelUsers.contains(array[1]) == false)
                  {
                    listModelUsers.addElement(array[1]);
-                   //userNames[userNames.length -1] = array[1];
                    userNames.add(array[1]);
                    //add public key here for rsa encryption
                    int pKey[] = new int[2];
@@ -394,10 +384,7 @@ class CommunicationReadThread extends Thread
                }
                else
                {
-
-                 //history.insert ("From Server: " + in.readLine() + "\n" , 0);
-                 //need to add the decrypt line here
-                 System.out.println ("Client: " + array[0]);
+                 System.out.println ("Source: " + array[0]);
                  String displayMessage = rsa.decryptMessage(array[2]);
                  gui.history.insert (array[0] + ": "  + displayMessage + "\n", 0);
                }

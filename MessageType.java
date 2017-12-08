@@ -3,6 +3,8 @@ import java.lang.Math;
 import java.lang.StringBuilder;
 import java.util.HashMap;
 import java.util.*;
+import java.math.BigInteger;
+
 
 public class MessageType
 {
@@ -43,7 +45,7 @@ public class MessageType
       return false;
     }
     phi = (p-1)*(q-1);
-    e = 0;
+    e = 2;
     while(relativelyPrime(e, phi) == false)
     {
       e++;
@@ -70,7 +72,7 @@ public class MessageType
   {
     return clientPublicKey;
   }
-  public String encryptMessage(String message, String username)
+ public String encryptMessage(String message, String username)
   {
     int pKey[] = hmap.get(username);
     int e = pKey[0];
@@ -92,12 +94,17 @@ public class MessageType
         block[0] = message.charAt(i);
         block[1] = message.charAt(i+1);
       }
+      BigInteger bi1, modN, bi3, exponent;
       ascii = (int)block[0] + (int)block[1] * 128;
-      encrypted = (int)Math.pow(ascii,e) % n;
-      sb.append(encrypted);
+      bi1 = new BigInteger(Integer.toString(ascii));
+      modN = new BigInteger(Integer.toString(n));
+      exponent = new BigInteger(Integer.toString(e));
+      bi3 = bi1.modPow(exponent,modN);
+     
+      encrypted = ((int)Math.pow(ascii,e)) % n;
+      sb.append(bi3);
       sb.append('/');      
     }
-    System.out.println(sb.toString());
     return sb.toString();
   }
   
@@ -106,45 +113,34 @@ public class MessageType
     String dMessage;
     StringBuilder sb = new StringBuilder();
     ArrayList<String> eList = new ArrayList<String>();
-    ArrayList<Integer> dList = new ArrayList<Integer>();
     int index = -1;
     int prev = -1;
     while(true)
     {
-      System.out.println(message);
-      //eList.add(message.split("\\/")[index]);
+      
       prev = index;
       index = message.indexOf('/', index+1);
-      System.out.println(message.substring(prev+1, index));
       eList.add(message.substring(prev+1, index));
       
-      System.out.println(index);
-      //System.out.println("ERROR");
       if(index  + 1 == message.length())
       {
-        //System.out.println("ERROR");
         break;
       }
     }
+    BigInteger decrypt, dValue, nValue,c1, c2;
     
     for(int i = 0; i < eList.size(); i++)
     {
-      int decrypt = Integer.parseInt(eList.get(i));
-      decrypt = (int)Math.pow(decrypt,clientPrivateKey[0]) % clientPrivateKey[1];
-      dList.add(decrypt);
+      decrypt = new BigInteger(eList.get(i));
+      dValue = new BigInteger(Integer.toString(clientPrivateKey[0]));
+      nValue = new BigInteger(Integer.toString(clientPrivateKey[1]));
+      decrypt = decrypt.modPow(dValue,nValue);
+      c2 = decrypt.divide(BigInteger.valueOf(128));
+      c1 = decrypt.subtract(c2.multiply(BigInteger.valueOf(128)));
+      sb.append((char)Integer.parseInt(c1.toString()));
+      sb.append((char)Integer.parseInt(c2.toString()));
     }
-    int c1,c2;
-    for(int i = 0; i < dList.size(); i++)
-    {
-      int toDecrypt = dList.get(i);
-      c2 = toDecrypt / 128;
-      c1 = toDecrypt - (c2*128);
-      sb.append((char)c1);
-      sb.append((char)c2);
-    }
-    
-    return sb.toString();
-    
+    return sb.toString(); 
   }
   
   //checks whether an int is prime or not.
